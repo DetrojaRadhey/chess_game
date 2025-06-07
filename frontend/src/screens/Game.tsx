@@ -29,6 +29,9 @@ export const Game = () => {
     const [gameId, setGameId] = useState<string | null>(null);
     const [showGameRequests, setShowGameRequests] = useState(false);
     const [socket, setSocket] = useState<WebSocket | null>(null);
+    const [isWaiting, setIsWaiting] = useState(() => {
+        return localStorage.getItem('isWaiting') === 'true';
+    });
 
     useEffect(() => {
         if (!userdetails?.user?.email) return;
@@ -47,6 +50,8 @@ export const Game = () => {
                     setGameId(message.payload.gameId);
                     setStarted(true);
                     setBoard(chess.board());
+                    setIsWaiting(false);
+                    localStorage.removeItem('isWaiting');
                     console.log("Game initialized, playing as", message.payload.color);
                     break;
                 case MOVE:
@@ -63,6 +68,8 @@ export const Game = () => {
                     setPlayerColor(message.payload.color);
                     setGameId(message.payload.gameId);
                     setBoard(chess.board());
+                    setIsWaiting(false);
+                    localStorage.removeItem('isWaiting');
                     break;
             }
         };
@@ -73,6 +80,15 @@ export const Game = () => {
             }
         };
     }, [userdetails?.user?.email]);
+
+    // Cleanup waiting state when component unmounts
+    useEffect(() => {
+        return () => {
+            if (!started) {
+                localStorage.removeItem('isWaiting');
+            }
+        };
+    }, [started]);
 
     const handleSquareClick = (square: Square | null) => {
         if (square === null) {
@@ -193,13 +209,23 @@ export const Game = () => {
                     <div className="col-span-2 bg-slate-900 w-full flex justify-center">
                         <div className="pt-8">
                             {!started && (
-                                <Button onClick={() => {
-                                    socket?.send(JSON.stringify({
-                                        type: INIT_GAME
-                                    }))
-                                }}>
-                                    Play
-                                </Button>
+                                <>
+                                    {isWaiting ? (
+                                        <div className="text-white text-center">
+                                            Waiting for other player...
+                                        </div>
+                                    ) : (
+                                        <Button onClick={() => {
+                                            socket?.send(JSON.stringify({
+                                                type: INIT_GAME
+                                            }));
+                                            setIsWaiting(true);
+                                            localStorage.setItem('isWaiting', 'true');
+                                        }}>
+                                            Play
+                                        </Button>
+                                    )}
+                                </>
                             )}
                             {started && playerColor && (
                                 <div className="text-white text-center">
