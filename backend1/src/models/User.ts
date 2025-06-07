@@ -1,22 +1,32 @@
 import mongoose from 'mongoose';
+const schema = mongoose.Schema;
 
-const userSchema = new mongoose.Schema({
+interface GameRequest {
+    from: string;
+    gameId: string;
+}
+
+const userSchema = new schema({
     name: String,
     email: {
         type: String,
         unique: true,
         required: true
     },
-    friend_requests: [{
-        type: String  // email addresses
-    }],
+    friend_requests: [String],
+    friend_list: [String],
     game_requests: [{
-        type: String  // email addresses
-    }],
-    friend_list: [{
-        type: String  // email addresses
+        from: String,
+        gameId: String
     }]
 });
 
-export const User = mongoose.model('User', userSchema);
+export interface IUser extends mongoose.Document {
+    name: string;
+    email: string;
+    friend_requests: string[];
+    friend_list: string[];
+    game_requests: GameRequest[];
+}
 
+export const User = mongoose.model<IUser>('User', userSchema);

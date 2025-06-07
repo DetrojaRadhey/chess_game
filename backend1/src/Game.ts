@@ -11,28 +11,42 @@ export class Game {
     private moveCount = 0;
     private timerInterval: NodeJS.Timeout | null = null;
     private timeLeft = 60;
+    public gameId: string;
 
-    constructor(player1: WebSocket, player2: WebSocket) {
+    constructor(player1: WebSocket, player2: WebSocket, gameId?: string) {
         this.player1 = player1;
         this.player2 = player2;
         this.board = new Chess();
         this.startTime = new Date();
         this.isYourTurn = true;
+        this.gameId = gameId || Math.random().toString(36).substring(7);
+
+        // Initialize game for both players
+        this.initializeGame();
+        this.startTimer();
+    }
+
+    private initializeGame() {
+        // Send initial game state to both players
         this.player1.send(JSON.stringify({
             type: INIT_GAME,
-            isYourTurn: this.isYourTurn,
+            isYourTurn: true,
             payload: {
-                color: "white"
+                color: "white",
+                gameId: this.gameId,
+                opponent: (this.player2 as any).userEmail
             }
         }));
+
         this.player2.send(JSON.stringify({
             type: INIT_GAME,
-            isYourTurn: !this.isYourTurn,
+            isYourTurn: false,
             payload: {
-                color: "black"
+                color: "black",
+                gameId: this.gameId,
+                opponent: (this.player1 as any).userEmail
             }
         }));
-        this.startTimer();
     }
 
     makeMove(socket: WebSocket, move: {

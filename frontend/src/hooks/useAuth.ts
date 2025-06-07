@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
 
-interface User {
-    email: string;
-    name: string;
-}
+// interface User {
+//     email: string;
+//     name: string;
+// }
 
 export const useAuth = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [user, setUser] = useState<User | null>(null);
+    const [userdetails, setUserdetails] = useState<any>(null);
 
     useEffect(() => {
         checkAuth();
@@ -24,14 +24,15 @@ export const useAuth = () => {
             if (response.ok) {
                 const data = await response.json();
                 setIsAuthenticated(true);
-                setUser(data.user);
+                setUserdetails(data);
+                console.log(data)
             } else {
                 setIsAuthenticated(false);
-                setUser(null);
+                setUserdetails(null);
             }
         } catch (error) {
             setIsAuthenticated(false);
-            setUser(null);
+            setUserdetails(null);
         } finally {
             setLoading(false);
         }
@@ -54,15 +55,16 @@ export const useAuth = () => {
 
             if (response.ok) {
                 setIsAuthenticated(true);
-                setUser({
+                setUserdetails({
                     email: (decoded as any).email,
                     name: (decoded as any).name
                 });
+                checkAuth();
             }
         } catch (error) {
             console.error('Authentication error:', error);
         }
     };
 
-    return { isAuthenticated, loading, user, handleGoogleLogin };
+    return { isAuthenticated, loading, userdetails, handleGoogleLogin, checkAuth };
 };

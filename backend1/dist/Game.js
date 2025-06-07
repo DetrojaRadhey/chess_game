@@ -4,7 +4,7 @@ exports.Game = void 0;
 const chess_js_1 = require("chess.js");
 const messages_1 = require("./messages");
 class Game {
-    constructor(player1, player2) {
+    constructor(player1, player2, gameId) {
         this.moveCount = 0;
         this.timerInterval = null;
         this.timeLeft = 60;
@@ -13,21 +13,31 @@ class Game {
         this.board = new chess_js_1.Chess();
         this.startTime = new Date();
         this.isYourTurn = true;
+        this.gameId = gameId || Math.random().toString(36).substring(7);
+        // Initialize game for both players
+        this.initializeGame();
+        this.startTimer();
+    }
+    initializeGame() {
+        // Send initial game state to both players
         this.player1.send(JSON.stringify({
             type: messages_1.INIT_GAME,
-            isYourTurn: this.isYourTurn,
+            isYourTurn: true,
             payload: {
-                color: "white"
+                color: "white",
+                gameId: this.gameId,
+                opponent: this.player2.userEmail
             }
         }));
         this.player2.send(JSON.stringify({
             type: messages_1.INIT_GAME,
-            isYourTurn: !this.isYourTurn,
+            isYourTurn: false,
             payload: {
-                color: "black"
+                color: "black",
+                gameId: this.gameId,
+                opponent: this.player1.userEmail
             }
         }));
-        this.startTimer();
     }
     makeMove(socket, move) {
         // validate the type of move using zod

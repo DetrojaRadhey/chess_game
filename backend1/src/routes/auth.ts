@@ -20,11 +20,32 @@ const authCheck: RequestHandler = async (req: any, res: any) => {
             return res.status(401).json({ message: "User not found" });
         }
 
+        // Get all users except the current user
+        const allUsers = await User.find(
+            { email: { $ne: decoded.email } }, 
+            { email: 1, _id: 0 }
+        ).lean().then(users => users.map(user => user.email));
+
+        // Filter out users who are already in friend_requests or friend_list
+        const availableUsers = allUsers.filter(email => 
+            !user.friend_requests.includes(email) && 
+            !user.friend_list.includes(email)
+        );
+
+        // Filter out users from friend_requests who are already in friend_list
+        const filteredFriendRequests = user.friend_requests.filter(email =>
+            !user.friend_list.includes(email)
+        );
+
         return res.json({ 
-            isAuthenticated: true, 
+            isAuthenticated: true,
+            users: availableUsers,
             user: { 
                 email: user.email, 
-                name: user.name 
+                name: user.name,
+                friend_requests: filteredFriendRequests,
+                friend_list: user.friend_list,
+                game_requests: user.game_requests
             } 
         });
     } catch (err) {
