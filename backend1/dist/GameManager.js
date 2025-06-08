@@ -21,13 +21,27 @@ class GameManager {
         this.friendGames = new Map();
     }
     addUser(socket, userEmail) {
-        this.users.push(socket);
+        // If user has an email, remove any existing socket connections for this user
         if (userEmail) {
+            // Remove old socket from users array
+            const oldSocket = this.users.find(user => user.userEmail === userEmail);
+            if (oldSocket) {
+                this.removeUser(oldSocket);
+            }
+            // If the old socket was pending, clear it
+            if (this.pendingUser && this.pendingUser.userEmail === userEmail) {
+                this.pendingUser = null;
+            }
             socket.userEmail = userEmail;
         }
+        this.users.push(socket);
         this.addHandler(socket);
     }
     removeUser(socket) {
+        // Check if the socket being removed is the pendingUser
+        if (this.pendingUser === socket) {
+            this.pendingUser = null;
+        }
         this.users = this.users.filter(user => user !== socket);
         const game = this.findGameBySocket(socket);
         if (game) {
