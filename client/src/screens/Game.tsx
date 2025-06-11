@@ -63,13 +63,19 @@ export const Game = () => {
                 case GAME_OVER:
                     setGameOver(message.payload);
                     break;
-                case ACCEPT_GAME_REQUEST:
-                    setStarted(true);
-                    setPlayerColor(message.payload.color);
-                    setGameId(message.payload.gameId);
-                    setBoard(chess.board());
-                    setIsWaiting(false);
-                    localStorage.removeItem('isWaiting');
+                // Fix: Handle game request acceptance properly
+                case SEND_GAME_REQUEST:
+                    const accept = window.confirm(`${message.payload.from} wants to play with you. Accept?`);
+                    if (accept) {
+                        ws.send(JSON.stringify({
+                            type: ACCEPT_GAME_REQUEST,
+                            payload: {
+                                gameId: message.payload.gameId,
+                                from: message.payload.from,
+                                to: userdetails.user.email
+                            }
+                        }));
+                    }
                     break;
             }
         };
@@ -157,30 +163,6 @@ export const Game = () => {
         return () => clearInterval(timer);
     }, [isYourTurn, started, gameOver, playerColor, socket]);
 
-    useEffect(() => {
-        if (!socket) return;
-
-        const handleMessage = (event: MessageEvent) => {
-            const data = JSON.parse(event.data);
-            if (data.type === SEND_GAME_REQUEST) {
-                const accept = window.confirm(`${data.payload.from} wants to play with you. Accept?`);
-                if (accept) {
-                    socket.send(JSON.stringify({
-                        type: ACCEPT_GAME_REQUEST,
-                        payload: {
-                            gameId: data.payload.gameId,
-                            from: userdetails?.user?.email,
-                            to: data.payload.from
-                        }
-                    }));
-                }
-            }
-        };
-
-        socket.addEventListener('message', handleMessage);
-        return () => socket.removeEventListener('message', handleMessage);
-    }, [socket, userdetails]);
-
     if (!socket) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -196,37 +178,37 @@ export const Game = () => {
         <div className="min-h-screen">
             {/* Header */}
             <header className="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700/50">
-                <div className="container mx-auto px-6 py-4">
+                <div className="container mx-auto px-4 sm:px-6 py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                             <button 
                                 onClick={() => navigate('/')}
-                                className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-lg flex items-center justify-center hover:scale-105 transition-transform"
+                                className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-lg flex items-center justify-center hover:scale-105 transition-transform"
                             >
-                                <span className="text-white font-bold text-xl">♔</span>
+                                <span className="text-white font-bold text-lg sm:text-xl">♔</span>
                             </button>
-                            <h1 className="text-2xl font-bold text-white">ChessMaster</h1>
+                            <h1 className="text-lg sm:text-2xl font-bold text-white">ChessMaster</h1>
                         </div>
-                        <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-2 sm:space-x-4">
                             {started && playerColor && (
-                                <div className="flex items-center space-x-3">
-                                    <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                                <div className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-3">
+                                    <div className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${
                                         playerColor === 'white' 
                                             ? 'bg-white text-slate-900' 
                                             : 'bg-slate-900 text-white border border-slate-600'
                                     }`}>
-                                        Playing as {playerColor}
+                                        {playerColor}
                                     </div>
-                                    <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                                    <div className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${
                                         isYourTurn 
                                             ? 'bg-emerald-500 text-white' 
                                             : 'bg-slate-600 text-slate-300'
                                     }`}>
-                                        {isYourTurn ? 'Your Turn' : 'Opponent\'s Turn'}
+                                        {isYourTurn ? 'Your Turn' : 'Opponent'}
                                     </div>
                                 </div>
                             )}
-                            <div className="text-emerald-400 font-medium">
+                            <div className="text-emerald-400 font-medium text-sm sm:text-base hidden sm:block">
                                 {userdetails?.user?.name}
                             </div>
                         </div>
@@ -234,11 +216,11 @@ export const Game = () => {
                 </div>
             </header>
 
-            <div className="container mx-auto px-6 py-8">
-                <div className="grid grid-cols-1 xl:grid-cols-4 gap-8 max-w-7xl mx-auto">
+            <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-8">
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-8 max-w-7xl mx-auto">
                     {/* Chess Board */}
-                    <div className="xl:col-span-3 flex justify-center">
-                        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700/50 shadow-2xl">
+                    <div className="lg:col-span-3 flex justify-center">
+                        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-3 sm:p-6 border border-slate-700/50 shadow-2xl">
                             <ChessBoard
                                 chess={chess} 
                                 setBoard={setBoard} 
@@ -253,14 +235,14 @@ export const Game = () => {
                     </div>
 
                     {/* Game Panel */}
-                    <div className="xl:col-span-1">
-                        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 shadow-2xl">
+                    <div className="lg:col-span-1">
+                        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 shadow-2xl p-4 sm:p-6">
                             {/* Timer */}
                             {started && (
                                 <div className="mb-6">
                                     <div className="text-center">
                                         <div className="text-slate-400 text-sm mb-2">Time Remaining</div>
-                                        <div className={`text-3xl font-bold ${
+                                        <div className={`text-2xl sm:text-3xl font-bold ${
                                             timeLeft <= 10 ? 'text-red-400' : 'text-emerald-400'
                                         }`}>
                                             {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
@@ -302,7 +284,7 @@ export const Game = () => {
                             {/* Friends List */}
                             {!started && showFriendsList && (
                                 <div className="mt-6">
-                                    <div className="flex justify-between items-center mb-4">
+                                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 space-y-2 sm:space-y-0">
                                         <h3 className="text-lg font-semibold text-white">Friends</h3>
                                         <Button 
                                             variant="outline"
@@ -318,17 +300,17 @@ export const Game = () => {
                                         </Button>
                                     </div>
                                     
-                                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                                    <div className="space-y-2 max-h-48 sm:max-h-64 overflow-y-auto">
                                         {userdetails?.user?.friend_list?.length > 0 ? (
                                             userdetails.user.friend_list.map((friend: string, index: number) => (
                                                 <div key={index} className="flex items-center justify-between bg-slate-700/50 rounded-lg p-3 border border-slate-600/50">
                                                     <div className="flex items-center space-x-3">
-                                                        <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center">
-                                                            <span className="text-white font-semibold text-sm">
+                                                        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-emerald-500 rounded-full flex items-center justify-center">
+                                                            <span className="text-white font-semibold text-xs sm:text-sm">
                                                                 {friend.charAt(0).toUpperCase()}
                                                             </span>
                                                         </div>
-                                                        <span className="text-white text-sm">{friend}</span>
+                                                        <span className="text-white text-sm truncate">{friend}</span>
                                                     </div>
                                                     <Button 
                                                         variant="success"

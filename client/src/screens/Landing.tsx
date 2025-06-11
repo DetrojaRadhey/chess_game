@@ -27,21 +27,21 @@ export const Landing = () => {
         <div className="min-h-screen flex flex-col">
             {/* Header */}
             <header className="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700/50">
-                <div className="container mx-auto px-6 py-4">
+                <div className="container mx-auto px-4 sm:px-6 py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-lg flex items-center justify-center">
-                                <span className="text-white font-bold text-xl">♔</span>
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-lg flex items-center justify-center">
+                                <span className="text-white font-bold text-lg sm:text-xl">♔</span>
                             </div>
-                            <h1 className="text-2xl font-bold text-white">ChessMaster</h1>
+                            <h1 className="text-lg sm:text-2xl font-bold text-white">ChessMaster</h1>
                         </div>
                         {isAuthenticated && (
-                            <div className="flex items-center space-x-4">
-                                <div className="text-emerald-400 font-medium">
+                            <div className="flex items-center space-x-2 sm:space-x-4">
+                                <div className="text-emerald-400 font-medium text-sm sm:text-base hidden sm:block">
                                     Welcome, {userdetails?.user?.name}
                                 </div>
-                                <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center">
-                                    <span className="text-white font-semibold text-sm">
+                                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-emerald-500 rounded-full flex items-center justify-center">
+                                    <span className="text-white font-semibold text-xs sm:text-sm">
                                         {userdetails?.user?.name?.charAt(0).toUpperCase()}
                                     </span>
                                 </div>
@@ -52,15 +52,15 @@ export const Landing = () => {
             </header>
 
             {/* Main Content */}
-            <main className="flex-1 container mx-auto px-6 py-12">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+            <main className="flex-1 container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center max-w-6xl mx-auto">
                     {/* Left Column - Image */}
                     <div className="flex justify-center lg:justify-end order-2 lg:order-1">
                         <div className="relative">
                             <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 rounded-3xl blur-3xl"></div>
                             <img 
                                 src="./chessboard.jpeg" 
-                                className="relative max-w-md w-full rounded-2xl shadow-2xl border border-slate-700/50" 
+                                className="relative max-w-xs sm:max-w-md w-full rounded-2xl shadow-2xl border border-slate-700/50" 
                                 alt="Chess Board"
                             />
                         </div>
@@ -68,20 +68,20 @@ export const Landing = () => {
 
                     {/* Right Column - Content */}
                     <div className="text-center lg:text-left order-1 lg:order-2">
-                        <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+                        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 leading-tight">
                             Play Chess
                             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-blue-400">
                                 Like a Master
                             </span>
                         </h1>
                         
-                        <p className="text-xl text-slate-300 mb-8 leading-relaxed">
+                        <p className="text-lg sm:text-xl text-slate-300 mb-6 sm:mb-8 leading-relaxed">
                             Challenge players worldwide in the most sophisticated chess experience. 
                             Master your skills, climb the ranks, and become a legend.
                         </p>
 
                         {/* Authentication Section */}
-                        <div className="space-y-6">
+                        <div className="space-y-4 sm:space-y-6">
                             {isAuthenticated ? (
                                 <div className="space-y-4">
                                     <Button 
@@ -134,21 +134,21 @@ export const Landing = () => {
 
                         {/* Features */}
                         {isAuthenticated && (
-                            <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6">
-                                <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700/50">
-                                    <div className="text-emerald-400 text-2xl mb-2">⚡</div>
-                                    <h3 className="text-white font-semibold mb-2">Quick Match</h3>
-                                    <p className="text-slate-400 text-sm">Find opponents instantly</p>
+                            <div className="mt-8 sm:mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+                                <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-slate-700/50">
+                                    <div className="text-emerald-400 text-xl sm:text-2xl mb-2">⚡</div>
+                                    <h3 className="text-white font-semibold mb-2 text-sm sm:text-base">Quick Match</h3>
+                                    <p className="text-slate-400 text-xs sm:text-sm">Find opponents instantly</p>
                                 </div>
-                                <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700/50">
-                                    <div className="text-emerald-400 text-2xl mb-2">👥</div>
-                                    <h3 className="text-white font-semibold mb-2">Friends</h3>
-                                    <p className="text-slate-400 text-sm">Play with your friends</p>
+                                <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-slate-700/50">
+                                    <div className="text-emerald-400 text-xl sm:text-2xl mb-2">👥</div>
+                                    <h3 className="text-white font-semibold mb-2 text-sm sm:text-base">Friends</h3>
+                                    <p className="text-slate-400 text-xs sm:text-sm">Play with your friends</p>
                                 </div>
-                                <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700/50">
-                                    <div className="text-emerald-400 text-2xl mb-2">🏆</div>
-                                    <h3 className="text-white font-semibold mb-2">Compete</h3>
-                                    <p className="text-slate-400 text-sm">Climb the leaderboard</p>
+                                <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-slate-700/50">
+                                    <div className="text-emerald-400 text-xl sm:text-2xl mb-2">🏆</div>
+                                    <h3 className="text-white font-semibold mb-2 text-sm sm:text-base">Compete</h3>
+                                    <p className="text-slate-400 text-xs sm:text-sm">Climb the leaderboard</p>
                                 </div>
                             </div>
                         )}

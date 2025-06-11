@@ -68,7 +68,10 @@ export const ChessBoard = ({ chess, board, socket, setBoard, playerColor, select
 
                 try {
                     const piece = chess.get(from);
-                    const isPromotion = piece && piece.type === 'p' && (squareRepresentation[1] === '8' || squareRepresentation[1] === '1');
+                    // Fix: Check if it's a pawn promotion correctly
+                    const isPromotion = piece && piece.type === 'p' && 
+                        ((piece.color === 'w' && squareRepresentation[1] === '8') || 
+                         (piece.color === 'b' && squareRepresentation[1] === '1'));
 
                     if (isPromotion) {
                         setPromotionMove(move);
@@ -138,7 +141,7 @@ export const ChessBoard = ({ chess, board, socket, setBoard, playerColor, select
         const isFrom = from === squareRepresentation;
         const isPossibleMove = possibleMoves.includes(squareRepresentation);
         
-        let classes = "w-16 h-16 sm:w-20 sm:h-20 relative transition-all duration-200 ";
+        let classes = "w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 relative transition-all duration-200 ";
         
         if (isSelected || isFrom) {
             classes += "bg-yellow-400 shadow-lg ";
@@ -161,9 +164,9 @@ export const ChessBoard = ({ chess, board, socket, setBoard, playerColor, select
         <div className="chess-board relative">
             {/* Coordinate labels */}
             <div className="flex">
-                <div className="w-8"></div>
+                <div className="w-6 sm:w-8"></div>
                 {Array.from({ length: 8 }, (_, i) => (
-                    <div key={i} className="w-16 sm:w-20 text-center text-slate-400 text-sm font-medium">
+                    <div key={i} className="w-12 sm:w-16 md:w-20 text-center text-slate-400 text-xs sm:text-sm font-medium">
                         {String.fromCharCode(97 + (playerColor === "black" ? 7 - i : i))}
                     </div>
                 ))}
@@ -172,7 +175,7 @@ export const ChessBoard = ({ chess, board, socket, setBoard, playerColor, select
             <div className="flex">
                 <div className="flex flex-col">
                     {Array.from({ length: 8 }, (_, i) => (
-                        <div key={i} className="w-8 h-16 sm:h-20 flex items-center justify-center text-slate-400 text-sm font-medium">
+                        <div key={i} className="w-6 sm:w-8 h-12 sm:h-16 md:h-20 flex items-center justify-center text-slate-400 text-xs sm:text-sm font-medium">
                             {playerColor === "black" ? i + 1 : 8 - i}
                         </div>
                     ))}
@@ -196,20 +199,20 @@ export const ChessBoard = ({ chess, board, socket, setBoard, playerColor, select
                                         {/* Possible move indicator */}
                                         {isPossibleMove && !square && (
                                             <div className="absolute inset-0 flex items-center justify-center">
-                                                <div className="w-4 h-4 bg-emerald-600 rounded-full opacity-70"></div>
+                                                <div className="w-3 h-3 sm:w-4 sm:h-4 bg-emerald-600 rounded-full opacity-70"></div>
                                             </div>
                                         )}
                                         
                                         {/* Capture indicator */}
                                         {isPossibleMove && square && (
-                                            <div className="absolute inset-0 border-4 border-red-500 rounded-full opacity-70"></div>
+                                            <div className="absolute inset-0 border-2 sm:border-4 border-red-500 rounded-full opacity-70"></div>
                                         )}
                                         
                                         {/* Piece */}
                                         <div className="w-full h-full flex items-center justify-center relative z-10">
                                             {square && (
                                                 <img 
-                                                    className="w-10 h-10 sm:w-12 sm:h-12 drop-shadow-lg" 
+                                                    className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 drop-shadow-lg" 
                                                     src={`/${square?.color === "b" ?
                                                         square?.type: `${square?.type?.toUpperCase()} copy`}.png`} 
                                                     alt={`${square.color} ${square.type}`}
