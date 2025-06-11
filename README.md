@@ -13,6 +13,11 @@ A modern, real-time multiplayer chess application built with React, TypeScript, 
 - Secure JWT-based authentication
 - MongoDB database integration
 
+## 🪟 Images
+![Screenshot 2025-06-11 162652](https://github.com/user-attachments/assets/d83a7a17-cada-4870-8066-c13a5b9b1a47)
+![Screenshot 2025-06-11 162819](https://github.com/user-attachments/assets/f8fa2d8c-c055-4972-b957-504e280c4657)
+![Screenshot 2025-06-11 162922](https://github.com/user-attachments/assets/8299d688-c502-44e2-8b0d-291f58122435)
+
 ## 🛠️ Tech Stack
 
 ### Frontend
