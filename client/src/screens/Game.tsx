@@ -351,7 +351,10 @@ export const Game = () => {
                 />
             )}
             {showGameRequests && (
-                <GameRequestsPopup onClose={() => setShowGameRequests(false)} />
+                <GameRequestsPopup 
+                    onClose={() => setShowGameRequests(false)} 
+                    socket={socket}
+                />
             )}
         </div>
     );

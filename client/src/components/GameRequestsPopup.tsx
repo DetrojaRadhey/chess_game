@@ -5,9 +5,10 @@ import { useNavigate } from 'react-router-dom';
 
 interface GameRequestsPopupProps {
     onClose: () => void;
+    socket: WebSocket | null;
 }
 
-const GameRequestsPopup: React.FC<GameRequestsPopupProps> = ({ onClose }) => {
+const GameRequestsPopup: React.FC<GameRequestsPopupProps> = ({ onClose, socket }) => {
     const { userdetails, checkAuth } = useAuth();
     const navigate = useNavigate();
     const gameRequests = userdetails?.user?.game_requests || [];
@@ -32,19 +33,17 @@ const GameRequestsPopup: React.FC<GameRequestsPopupProps> = ({ onClose }) => {
             if (response.ok) {
                 checkAuth();
                 
-                if (action === 'accept') {
-                    const ws = new WebSocket(`ws://localhost:8080?email=${userdetails.user.email}`);
-                    ws.onopen = () => {
-                        ws.send(JSON.stringify({
-                            type: 'accept_game_request',
-                            payload: {
-                                gameId,
-                                from,
-                                to: userdetails.user.email
-                            }
-                        }));
-                        navigate('/game');
-                    };
+                if (action === 'accept' && socket) {
+                    socket.send(JSON.stringify({
+                        type: 'accept_game_request',
+                        payload: {
+                            gameId,
+                            from,
+                            to: userdetails.user.email
+                        }
+                    }));
+                    onClose()
+                    navigate('/game');
                 }
             } else {
                 console.error('Failed to handle game request');
